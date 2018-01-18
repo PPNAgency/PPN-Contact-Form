@@ -36,31 +36,3 @@ include("ppn-contact-form/ppn-contact-form.php");
 </html>
 
 
-<!--
-
-<div class="col-md-6 mx-auto">
-		<form action="mail.php" method="POST">
-		  <div class="form-group">
-		    <input type="name" class="form-control" id="name" aria-describedby="name" placeholder="Name">
-		  </div>
-		   <div class="form-group">
-		    <input type="surname" class="form-control" id="surname" aria-describedby="surname" placeholder="Surname">
-		  </div>
-		  <div class="form-group">
-		    <input type="e-mail" class="form-control" id="e-mail" aria-describedby="e-mail" placeholder="E-mail">
-		  </div>
-		  <div class="form-group">
-		    <textarea class="form-control" id="message" rows="3" placeholder="Message"></textarea>
-		  </div>
-		  <div class="form-check">
-		    <label class="form-check-label">
-		      <input type="checkbox" class="form-check-input">
-		      By sending this message, I authorise the use of my personal data (In compliance with AoL 196/03 and successive notifications)
-		    </label>
-		  </div>
-		  <div class="text-center">
-		  <button type="send" class="btn btn-primary">Send</button>
-		  </div>
-		</form>
-	</div>
--->
