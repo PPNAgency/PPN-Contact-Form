@@ -9,7 +9,61 @@ include('./PHPMailer/SMTP.php');
 $ini = parse_ini_file("conf.ini",TRUE);
 $configuration = $ini["configuration"];
 
+$ajax_submit = isset($configuration["ajax_submit"]) ? $configuration["ajax_submit"] : false;
 
+// reCaptcha server side validation
+
+$recaptcha = isset($configuration["recaptcha"]) ? $configuration["recaptcha"] : false;
+
+if($recaptcha)
+{
+		$recaptcha_secret = isset($configuration["recaptcha_secret"]) ? $configuration["recaptcha_secret"] : "";
+		$g_recaptcha_response = isset($_POST["g-recaptcha-response"]) ? $_POST["g-recaptcha-response"] : "";
+
+		if(($recaptcha_secret!="") && ($g_recaptcha_response!=""))
+		{
+			$query_url = "https://www.google.com/recaptcha/api/siteverify?secret=";
+			$query_url.= $recaptcha_secret;
+			$query_url.= "&response=";
+			$query_url.= $g_recaptcha_response;
+			$query_url.= "&remoteip=";
+			$query_url.= $_SERVER['REMOTE_ADDR'];
+
+			// Call Google API
+			$response = file_get_contents($query_url);
+
+			$response = json_decode($response);
+			if($response->success==false)
+			{
+				// Google API says reCaptcha fails...
+				if($ajax_submit)
+				{
+					echo -1;
+				}	
+				else
+				{
+					header("location: ".$configuration["recaptcha_error_page"]);
+				}
+				die();
+			}
+		}
+		else
+		{
+			// Recaptcha secret is not specified... or
+			// Recaptcha user verification token is not specified... 
+			// Mailing must be aborted....
+
+			if($ajax_submit)
+			{
+				echo -1;
+			}	
+			else
+			{
+				header("location: ".$configuration["recaptcha_error_page"]);
+			}
+			die();
+		}
+}
 
 function templateTagResolver($templateString)
 {
@@ -29,7 +83,7 @@ function templateTagResolver($templateString)
 
 		// Tag speciali
 	$date = date('j/n/Y');
-	$time = date('h:i');
+	$time = date('h:i A');
 	$templateString = str_replace("{{date}}", $date, $templateString);
 	$templateString = str_replace("{{time}}", $time, $templateString);
 
@@ -85,7 +139,15 @@ $email_template = file_get_contents($email_template_file);
 
 if($email_template===FALSE)
 {
-	header("location: ".$configuration["error_page"]);
+	if($ajax_submit)
+	{
+		echo 0;
+	}	
+	else
+	{
+		header("location: ".$configuration["error_page"]);
+	}
+
 	die();
 }
 
@@ -110,8 +172,14 @@ $sendResult = $mailer->Send();
 
 if(!$sendResult)
 {
-	header("location: ".$configuration["error_page"]);
-	//echo $mailer->ErrorInfo;
+	if($ajax_submit)
+	{
+		echo 0;
+	}	
+	else
+	{
+		header("location: ".$configuration["error_page"]);
+	}
 	die();
 }
 
@@ -141,7 +209,14 @@ if( isset($configuration["user_email_template"]) && isset($_POST["email"]))
 
 	if($user_email_template===FALSE)
 	{
-		header("location: ".$configuration["error_page"]);
+		if($ajax_submit)
+		{
+			echo 0;
+		}	
+		else
+		{
+			header("location: ".$configuration["error_page"]);
+		}
 		die();
 	}
 
@@ -160,7 +235,14 @@ if( isset($configuration["user_email_template"]) && isset($_POST["email"]))
 
 	if(!$sendResult)
 	{
-		header("location: ".$configuration["error_page"]);
+		if($ajax_submit)
+		{
+			echo 0;
+		}	
+		else
+		{
+			header("location: ".$configuration["error_page"]);
+		}		
 		die();
 	}
 
@@ -175,9 +257,13 @@ if( isset($configuration["user_email_template"]) && isset($_POST["email"]))
                              |_|                              
 */
 
-header("location: ".$configuration["success_page"]);
-
-
-
+if($ajax_submit)
+{
+	echo 1;
+}
+else
+{                             
+	header("location: ".$configuration["success_page"]);
+}
 ?>
 

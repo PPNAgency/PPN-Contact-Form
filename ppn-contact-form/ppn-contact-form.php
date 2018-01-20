@@ -42,14 +42,25 @@ $mailer_engine = "ppn-contact-form/".$mailer_engine;
 
 $method = isset($configuration["method"]) ? $configuration["method"] : "POST";
 
+$ajax_submit = isset($configuration["ajax_submit"]) ? $configuration["ajax_submit"] : false;
+
+$recaptcha = isset($configuration["recaptcha"]) ? $configuration["recaptcha"] : false;
+
+
 /*echo "<pre>";print_r($configuration);echo "<pre>";*/
 
 $form_html = '';
 
 // Building the form outer tag
 
+// Include Google recaptcha if needed
+if($recaptcha)
+{
+	$form_html.="<script src='https://www.google.com/recaptcha/api.js'></script>";
+}
 
-$form_html.="<form action=\"$mailer_engine\" method=\"$method\">";
+
+$form_html.="<form id=\"ppn-contact-form\" action=\"$mailer_engine\" method=\"$method\">";
 
 foreach ($ini as $key => $form_field) 
 {
@@ -142,6 +153,21 @@ foreach ($ini as $key => $form_field)
 
 		 		break;
 
+		 	case 'recaptcha':
+
+		 		if($recaptcha)
+		 		{
+		 			$recaptcha_html = "<div class=\"g-recaptcha\" data-sitekey=\"";
+		 			$recaptcha_html.= $configuration["recaptcha_site_key"]."\"";
+		 			$recaptcha_html.= " style=\"".$configuration["recaptcha_style"]."\"></div>";
+		 			
+		 			$form_html.=$recaptcha_html;
+
+		 		}
+
+
+		 		break;
+
 		 	case 'submit':
 
 		 		$form_html.="<div";
@@ -164,7 +190,71 @@ foreach ($ini as $key => $form_field)
 	}
 }
 
+// Alert generation (only in Ajax Mode)
+
+
+if($ajax_submit)
+{
+	// Alert if mails were successfully sent
+
+	$form_html.="<div id=\"ppn-contact-form-success\" class=\"alert alert-success\" role=\"alert\" style=\"display:none;\">";
+	$form_html.=$configuration["success_message"];
+	$form_html.="</div>";
+
+	// Alert if an error occurs
+
+	$form_html.="<div id=\"ppn-contact-form-error\"class=\"alert alert-danger\" role=\"alert\" style=\"display:none;\">";
+	$form_html.=$configuration["error_message"];
+	$form_html.="</div>";
+
+
+}
+
+if($recaptcha)
+{
+	// Alert if user do not fill recaptcha
+
+	$form_html.="<div id=\"ppn-contact-form-recaptcha-fill\"class=\"alert alert-warning\" role=\"alert\" style=\"display:none;\">";
+	$form_html.=$configuration["recaptcha_fill_message"];
+	$form_html.="</div>";
+
+	// Alert if recaptcha failed (after server side validation)
+
+	$form_html.="<div id=\"ppn-contact-form-recaptcha-failed\"class=\"alert alert-danger\" role=\"alert\" style=\"display:none;\">";
+	$form_html.=$configuration["recaptcha_failed_message"];
+	$form_html.="</div>";
+
+}
+
+
+
+
 $form_html.="</form>";
+
+
+// Ajax handler (if selected)
+
+if($ajax_submit)
+{
+	$submit_script_file = "ppn-contact-form/js/ajax-submit.js";
+}
+else
+{
+	$submit_script_file = "ppn-contact-form/js/submit.js";
+}
+
+$script = file_get_contents($submit_script_file);
+
+if($script)
+{
+	$form_html.="<script type=\"text/javascript\">";
+
+	if($recaptcha) $form_html.="var recaptcha = true;";
+	else $form_html.="var recaptcha = false;";
+
+	$form_html.=$script;
+	$form_html.="</script>";
+}
 
 
 // At last,  outputs the form
