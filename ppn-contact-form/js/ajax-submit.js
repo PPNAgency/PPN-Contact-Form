@@ -18,51 +18,6 @@ $( "#ppn-contact-form" ).on( "submit", function( event )
 			$("#ppn-contact-form-recaptcha-fill").fadeIn();
 			return;
 		}
-
-    // Step 2: Server side validation (synchronous-JAX)
-    // INSECURE (TO REMOVE)
-/*
-    var validated = false;
-
-    $.ajax({
-         type: "POST",
-         async: false,
-         url: "ppn-contact-form/ppn-recaptcha-validator.php",
-         data: {'g-recaptcha-response': g_recaptcha_response}, 
-
-         success: function(response)
-         {
-             //console.log("response:"+response);
-             if(response.trim()==="1")
-             {
-                //console.log("true");
-                validated = true;
-             }
-             else
-             {
-                //console.log("false");
-                validated = false;
-                $("#ppn-contact-form-recaptcha-failed").fadeIn();
-                
-             }
-         },
-
-         error: function(response)
-         {
-             validated = false;
-         }
-       });
-
-      // If validation failed STOP submitting
-
-      if(validated==false) 
-      {
-        console.log("Recaptcha server validation failed!");
-        return;
-      }
-
-      console.log("Recaptcha server validation passed!");
-      */
 	}
 
 	
