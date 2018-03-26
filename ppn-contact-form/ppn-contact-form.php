@@ -194,7 +194,13 @@ foreach ($ini as $key => $form_field)
 		 		$valuesString = $form_field["values"];
 		 		$values = explode(',',$valuesString);
 
-		 		$form_html .= "<div class=\"form-group\">";
+
+
+
+		 		// Check if this select had to change the email destination to
+
+		 		$form_html.= "<div class=\"form-group\">";
+		 		
 
 		 		// Check for label
 
@@ -205,7 +211,20 @@ foreach ($ini as $key => $form_field)
 		 		}
 
 
-		 		$form_html .= "<select class=\"custom-select\" id=\"$key\" name=\"$key\">";
+				if(isset($form_field["otheremails"]))
+		 		{
+		 			$form_html .= "<select class=\"custom-select\" id=\"$key\" name=\"$key\" onchange=\"changeEmailAddress(this)\">";
+		 			//$form_html .= "<div class=\"form-group\" onchange=\"changeEmailAddress(this)\">";
+		 		}
+		 		else
+		 		{
+
+					$form_html .= "<select class=\"custom-select\" id=\"$key\" name=\"$key\">";
+		 		}
+
+		 		
+
+
 		 		for($i=0;$i<count($options);$i++)
 		 		{
 		 			$form_html .= "<option value=\"".$values[$i]."\">".$options[$i]."</option>";
@@ -214,6 +233,28 @@ foreach ($ini as $key => $form_field)
 		 		
 
 		 		$form_html .= "</div>";
+
+
+				// Other check if this select had to change the email destination to
+		 		if(isset($form_field["otheremails"]))
+		 		{
+		 			$emailsString = $form_field["otheremails"];
+		 			$emails = explode(",",$emailsString);
+
+		 			$namesString = $form_field["othernames"];
+		 			$names = explode(",",$namesString);
+
+		 			$form_html .= "<input type=\"hidden\" id=\"otheremailaddress\" name=\"otheremailaddress\" value=\"$emails[0]\">";
+		 			$form_html .= "<input type=\"hidden\" id=\"othername\" name=\"othername\" value=\"$names[0]\">";
+
+		 			$form_html .= "<script>";
+		 			$form_html .="var emailsList = ". json_encode($emails) .";"; 
+		 			$form_html .="var namesList = ". json_encode($names) .";"; 
+		 			$form_html .= file_get_contents("./ppn-contact-form/js/select-email.js");
+
+		 			$form_html .= "</script>";
+		 		}
+		 		
 
 		 		break;	
 		 	

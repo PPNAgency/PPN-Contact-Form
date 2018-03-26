@@ -81,7 +81,7 @@ function templateTagResolver($templateString)
 
 	}
 
-		// Tag speciali
+	// Tag speciali
 	$date = date('j/n/Y');
 	$time = date('h:i A');
 	$templateString = str_replace("{{date}}", $date, $templateString);
@@ -127,9 +127,16 @@ $mailer->setFrom($configuration["from_email"],$configuration["from_name"]);
 
 // Phase 1: Send the contact email to the Customer Service
 
-foreach ($configuration["destination_email"] as $key => $value) 
+if(isset($_POST["otheremailaddress"]))
 {
-	$mailer->addAddress($value,$configuration["destination_name"][$key]);
+	$mailer->addAddress($_POST["otheremailaddress"],$_POST["othernames"]);
+}
+else
+{	
+	foreach ($configuration["destination_email"] as $key => $value) 
+	{
+		$mailer->addAddress($value,$configuration["destination_name"][$key]);
+	}
 }
 
 // Phase 2: Read the email template from file
