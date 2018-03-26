@@ -17,8 +17,8 @@
 
 by Luca Giusti
 For PPN.Agency
-Version 0.2
-16/01/2018
+Version 0.3
+26/03/2018
 
 */
 
@@ -182,6 +182,40 @@ foreach ($ini as $key => $form_field)
 
 
 		 		break;
+
+
+		 	case 'select':
+		 	
+
+		 		$optionsString = $form_field["options"];
+		 		$options = explode(',',$optionsString);
+
+
+		 		$valuesString = $form_field["values"];
+		 		$values = explode(',',$valuesString);
+
+		 		$form_html .= "<div class=\"form-group\">";
+
+		 		// Check for label
+
+		 		if(!empty($label))
+		 		{
+		 			$form_html.= "<label class=\"control-label\" ";
+		 			$form_html.= "for=\"$key\">$label</label>";
+		 		}
+
+
+		 		$form_html .= "<select class=\"custom-select\" id=\"$key\" name=\"$key\">";
+		 		for($i=0;$i<count($options);$i++)
+		 		{
+		 			$form_html .= "<option value=\"".$values[$i]."\">".$options[$i]."</option>";
+		 		}
+		 		$form_html .= "</select>";
+		 		
+
+		 		$form_html .= "</div>";
+
+		 		break;	
 		 	
 		 	default:
 		 		# code...
