@@ -307,31 +307,6 @@ if($recaptcha)
 $form_html.="</form>";
 
 
-// Ajax handler (if selected)
-
-if($ajax_submit)
-{
-	$submit_script_file = "ppn-contact-form/js/ajax-submit.js";
-}
-else
-{
-	$submit_script_file = "ppn-contact-form/js/submit.js";
-}
-
-$script = file_get_contents($submit_script_file);
-
-if($script)
-{
-	$form_html.="<script type=\"text/javascript\">";
-
-	if($recaptcha) $form_html.="var recaptcha = true;";
-	else $form_html.="var recaptcha = false;";
-
-	$form_html.=$script;
-	$form_html.="</script>";
-}
-
-
 // At last,  outputs the form
 
 print($form_html);
