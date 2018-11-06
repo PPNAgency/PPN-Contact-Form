@@ -141,15 +141,17 @@ else
 
 // Check for CC & BCC recipient 
 
-foreach ($configuration["cc_email"] as $key => $value) 
-{
-	$mailer->addCC($value,$configuration["cc_name"][$key]);
-}
+if(!empty($configuration["cc_email"]))
+	foreach ($configuration["cc_email"] as $key => $value) 
+	{
+		$mailer->AddCC($value,$configuration["cc_name"][$key]);
+	}
 
-foreach ($configuration["bcc_email"] as $key => $value) 
-{
-	$mailer->addBCC($value,$configuration["bcc_name"][$key]);
-}
+if(!empty($configuration["bcc_email"]))
+	foreach ($configuration["bcc_email"] as $key => $value) 
+	{
+		$mailer->AddBCC($value,$configuration["bcc_name"][$key]);
+	}
 
 // Phase 2: Read the email template from file
 
